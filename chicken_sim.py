@@ -8,6 +8,8 @@ def new_distribution(hp_loc=1.5, hp_scale=0.25):
     dist_var = max(0, dist_var)
     return (dist_mu, dist_var)
 
+    # set variance to .25
+
 menu = '''
 Enter n to get a new distribution for reaction times.
 Enter d to get the reaction time distribution parameters.
@@ -73,7 +75,7 @@ if __name__ == "__main__":
                 print("YOU BOTH CRASH!!!")
             elif pl1 == pl2:
                 print("You both swerve at the same time and tie!")
-            elif pl1 < pl2:
+            elif pl1 > pl2:
                 print("Player 1 swerves first -- Player 2 wins!")
             else:
                 print("Player 2 swerves first -- Player 1 wins!")
