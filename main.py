@@ -10,15 +10,15 @@ MEMBERS = ["ts4pe", "jac9vn"]
 # avg would work, drawing from bothh parameters
 # estimate reaction time, estimate for m and slace, so play it at mean, so fine some point after
 
-outcome = -1
 swerve_time = 5
-
+opp_bias = 0
 my_moves = []
 my_scores = []
 opp_moves = []
 reaction_times = []  # the last reounds reactiont time
 my_previous_move = -1  # my last swerve time
 num_rounds_batch = 20
+
 """ 
 def regression_info():
     gradient, intercept, r_value, p_value, std_err = stats.linregress(prevSwerve_rounds, prevScore_rounds)
@@ -41,32 +41,38 @@ def regression_info():
         return swerve_time """
 
 
-""" # Do for some number of rounds till we get enoguht data to compute information
-def chose_next():
-    if previous_move == 1:
-        return swerve_time
-
-    elif previous_move == -1:
-        return swerve_time - 1
-
-    elif previous_move == -10:
-        return swerve_time + 1 """
-
-
 def get_move(state):
     if state['game'] == "chicken":
         """ Chicken game -- avoid colliding or swerving before your opponent, given reaction time distrubtion, previous scores, and opp moves  """
 
+        # gather the inputs; append them to the global state
         opp_moves.append(state['previous-move'])
-        my_scores.append(state['outcome'])
+        outcome = state['outcome']
+        my_scores.append(outcome)
         reaction_times.append(state['reaction-time'])
+
+        # we want the next move to be just under the valid range of reaction times, so next_move = mean - 3*stdev
         mean_reaction_time = np.average(reaction_times)
         stdev_reaction_time = np.stdev(reaction_times)
-        next_move = mean_reaction_time - 3 * stdev_reaction_time
+
+        # adjust the next move depending on whether the opponent is winning or not
+        if outcome == -1:
+            opp_bias += 1
+        if outcome == 1:
+            opp_bias -= 1
+        next_move = mean_reaction_time + opp_bias - 3 * stdev_reaction_time
+        if next_move < 0:
+            next_move = 0
         my_moves.append(next_move)
 
         return next_move
     else:
         """ Connect More - see if win is solvable (forced), means shorter connect value and thick board, else... """
+
+        # gather the inputs
+        connect_n = state['connect_n']
+        columns = state['columns']
+        your_token = state['your-token']
+        board = state['board']
 
         pass
